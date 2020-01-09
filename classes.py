@@ -74,9 +74,33 @@ class RAS():
             self.flow_intake_seawater+= self.department4.flow_seawater*self.department4.number_tanks
             self.flow_intake_freshwater+= self.department4.flow_seawater*self.department4.number_tanks
             self.volume+=self.department4.volume_tanks*self.department4.number_tanks
-            
-
             i+=1
+            
+        if i < number_of_departments: 
+            spec = list_of_dict[i]
+            self.department5 = self.Department(spec['number tanks'],spec['diameter'],spec['HRT'], spec['specific density'], spec['salinity'], spec['recirc degree'])
+            self.department5.set_dimensions()
+            self.department5.set_intake_water_flows()
+            self.departments.append(self.department5)
+            self.flow_intake+= self.department5.flow_intake*self.department5.number_tanks
+            self.flow_intake_seawater+= self.department5.flow_seawater*self.department5.number_tanks
+            self.flow_intake_freshwater+= self.department5.flow_seawater*self.department5.number_tanks
+            self.volume+=self.department5.volume_tanks*self.department5.number_tanks
+            i+=1
+            
+        if i < number_of_departments: 
+            spec = list_of_dict[i]
+            self.department6 = self.Department(spec['number tanks'],spec['diameter'],spec['HRT'], spec['specific density'], spec['salinity'], spec['recirc degree'])
+            self.department6.set_dimensions()
+            self.department6.set_intake_water_flows()
+            self.departments.append(self.department6)
+            self.flow_intake+= self.department6.flow_intake*self.department6.number_tanks
+            self.flow_intake_seawater+= self.department6.flow_seawater*self.department6.number_tanks
+            self.flow_intake_freshwater+= self.department6.flow_seawater*self.department6.number_tanks
+            self.volume+=self.department6.volume_tanks*self.department6.number_tanks
+            i+=1
+    
+
                 
         
     class Department(): 
@@ -84,7 +108,7 @@ class RAS():
             self.number_tanks = number_tanks
             self.diameter_tanks = diameter_tanks
             self.HRT = HRT
-            self.specific_denisty = specific_density
+            self.specific_density = specific_density
             self.salinity = salinity
             self.recirc_degree = recirc_degree
         
@@ -93,9 +117,9 @@ class RAS():
     
         def set_dimensions(self):
             if self.diameter_tanks >= 10:
-                ratio = 2.8
+                ratio = 3.6
             if self.diameter_tanks < 10:
-                ratio = 2
+                ratio = 2.6
             self.height_tanks = (1/ratio)*self.diameter_tanks
             self.volume_tanks = self.height_tanks*(self.diameter_tanks/2)**2*3.14
             self.flow_recirc = self.volume_tanks/self.HRT*60
@@ -136,7 +160,8 @@ class RAS():
                 #Main pump
                 #height of tanks, but have to 
                 head_friction_losses = 0.125*self.height_tanks
-                self.main_pump = power_consumption_pump(self.height_tanks+head_friction_losses,0.8,self.flow_recirc)
+                head_degasser = 2
+                self.main_pump = power_consumption_pump(self.height_tanks+head_friction_losses+head_degasser,0.8,self.flow_recirc)
    
     
                 #Degasser
@@ -166,10 +191,10 @@ class RAS():
                 self.UV = power_consumption_UV(self.flow_intake)
 
                 ## Mechanical filter
-                self.mechfilter_inlet = power_consumption_drumfilter(self.flow_intake)[0] + power_consumption_drumfilter(self.flow_intake)[1] 
+                self.mechfilter_inlet = power_consumption_drumfilter(self.flow_intake)[0] + power_consumption_drumfilter(self.flow_intake)[1]*0.5
     
                 ## Heat pump 
-                COP = 10
+                COP = 12
                 self.heat_pump = power_heat_pump(self.flow_freshwater, self.flow_seawater, COP, self.fish.system_temp, self.fish.MW, water_temp)
     
                 #Building - should this maybe be added to the system instead?? 
@@ -210,7 +235,7 @@ class RAS():
                 units = ["mechanical filtration", "pump", "degasser", "feeder", "tank light", "biofilter", "oxygenation", "pump intak", "UV", "mechanical filtration inlet", "ventilation", "building heating", "lighting", "sludge", "heat pump"]
                 self.distribution = pd.DataFrame(list(zip(units,[x/sum(self.energy_use)*100 for x in self.energy_use])))
                 
-                print(self.distribution)
+               
                 
     def calculate_energy_consumption_by_unit(self): 
         units = ["mechanical filtration", "pump", "degasser", "feeder", "tank light", "biofilter", "oxygenation", "pump intak", "UV", "mechanical filtration inlet", "ventilation", "building heating", "lighting", "sludge filtering", "heat pump",  "other"]
@@ -234,9 +259,28 @@ class RAS():
             self.department4.calculate_power_consumption_by_unit_and_department()
             list_power = [self.department1.energy_use[i] + self.department2.energy_use[i] + self.department3.energy_use[i] + self.department4.energy_use[i]for i in np.arange(len(self.department4.energy_use))]
             
+        if len(self.departments) == 5: 
+            self.department1.calculate_power_consumption_by_unit_and_department()
+            self.department2.calculate_power_consumption_by_unit_and_department()
+            self.department3.calculate_power_consumption_by_unit_and_department()
+            self.department4.calculate_power_consumption_by_unit_and_department()
+            self.department5.calculate_power_consumption_by_unit_and_department()
+            list_power = [self.department1.energy_use[i] + self.department2.energy_use[i] + self.department3.energy_use[i] + self.department4.energy_use[i] + self.department5.energy_use[i] for i in np.arange(len(self.department4.energy_use))]
+       
+        if len(self.departments) == 6: 
+            self.department1.calculate_power_consumption_by_unit_and_department()
+            self.department2.calculate_power_consumption_by_unit_and_department()
+            self.department3.calculate_power_consumption_by_unit_and_department()
+            self.department4.calculate_power_consumption_by_unit_and_department()
+            self.department5.calculate_power_consumption_by_unit_and_department()
+            self.department6.calculate_power_consumption_by_unit_and_department()
             
-        # adding 20 % of energy use for other purposes
-        share_other = 0.19
+            list_power = [self.department1.energy_use[i] + self.department2.energy_use[i] + self.department3.energy_use[i] + self.department4.energy_use[i] + self.department5.energy_use[i] + self.department6.energy_use[i] for i in np.arange(len(self.department4.energy_use))]
+       
+        
+            
+        # adding 15 % of energy use for other purposes
+        share_other = 0.15
        
         list_power.append(sum(list_power)*share_other)
         self.energy_use = pd.DataFrame(list(zip(units,list_power))).set_index(0)
@@ -262,10 +306,15 @@ class RAS():
             return sum(self.department1.total_power) + sum(self.department2.total_power) + sum(self.department3.total_power)
         if len(self.departments) == 4: 
             return sum(self.department1.total_power) + sum(self.department2.total_power) + sum(self.department3.total_power) + sum(self.department4.total_power)
-
+        if len(self.departments) == 5: 
+            return sum(self.department1.total_power) + sum(self.department2.total_power) + sum(self.department3.total_power) + sum(self.department4.total_power) + sum(self.department5.total_power)
+        if len(self.departments) == 6: 
+            return sum(self.department1.total_power) + sum(self.department2.total_power) + sum(self.department3.total_power) + sum(self.department4.total_power) + sum(self.department5.total_power) + sum(self.department6.total_power)
+   
+            
     
     def specific_power(self):
-        share_other = 0.2
+        share_other = 0.15
         return (self.total_power()+share_other*self.total_power())/self.volume
     
 
@@ -283,10 +332,9 @@ class Fish():
         
         self.oxygen = df['oxygen']*number_of_fish
         self.TSS = 0.25*df['feed']*number_of_fish
-        #self.co2 = 0.409*df['feed']*number_of_fish #co2 from project thesis
         self.co2 = 0.81*df['oxygen']*number_of_fish #RQ from AGA 
         self.TAN = 0.54*0.095*df['feed']*number_of_fish #already in kg
-        self.MW = number_of_fish*self.end_weight**0.63
+        self.MW = number_of_fish*(self.end_weight)**0.63
 
     def plot_fish(self):
         #ax = self.start_weight.plot(secondary_y=True, label='fish weight')
@@ -311,4 +359,5 @@ def max_number_of_fish(fish,end_weight, last_department):
     return (last_department.specific_denisty * last_department.volume_tanks*last_department.number_tanks)/fish.end_weight.iloc[-1]
     
 
-
+def number_tanks(list_of_end_weights, list_of_spec_density, list_of_tank_volumes,fish_produced ): 
+        return [((list_of_end_weights[i]/1000)/list_of_spec_density[i]*fish_produced)/list_of_tank_volumes[i] for i in np.arange(len(list_of_end_weights))]

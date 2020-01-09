@@ -47,7 +47,7 @@ def power_consumption_fish_tank(diameter):
 
     installed_power_feeder = 120/1000 #kW
     if diameter <= 10: 
-        installed_power_lights = 1 #kW
+        installed_power_lights = 0.8 #kW
         installed_power_feeder*=1#kW
     if diameter > 10: 
         installed_power_lights = 1.5
@@ -157,13 +157,13 @@ def power_heat_pump(Q_intake_fw,Q_intake_sw, COP, system_temp, MW_fish, water_te
     heat_demand = ((Q_intake_fw+Q_intake_sw)/60/60)*ro*cp*delta_T #kW
     
     # This regression line models the heat production per metabolic weight and depends on temperature
-    HP = (0.66+0.0339*system_temp)*0.001163 #KW/kg fish weight
+    HP = (0.66+0.0339*system_temp)*0.001163 #KWh/kg fish weight/hr
 
     # The heat production by fish is found 
-    heat_gain_fish = HP*MW_fish 
+    heat_gain_fish = HP*MW_fish
     
     # This is the net heat demand 
-    net_heat_demand = heat_demand-heat_gain_fish
+    net_heat_demand = heat_demand#-heat_gain_fish
  
     return net_heat_demand/COP
 

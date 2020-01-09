@@ -1,7 +1,8 @@
 # RAS-model-
 
 This repository contains the code for the RAS energy model, developed as part of my Master's Thesis: Energy use and efficiency in Recirculating
-Aquaculture Systems (RAS). The documentation for the code is detailed in the Master's Thesis report 
+Aquaculture Systems (RAS). 
+The details regarding assumptions and modeling is detailed in the Master's Thesis report. 
 
 ## To run the model
 1. Install Anaconda: https://www.anaconda.com/distribution/#windows 

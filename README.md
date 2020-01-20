@@ -5,7 +5,7 @@ Aquaculture Systems (RAS).
 The details regarding assumptions and modeling is detailed in the Master's Thesis report. 
 
 ## To run the model
-1. '''git clone''' into desired directory
+1. ```git clone``` into desired directory
 2. Install Anaconda: https://www.anaconda.com/distribution/#windows 
 3. In the terminal, create an environement and install the required packages by 
     ```conda create --name <env> --file req.txt```

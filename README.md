@@ -2,7 +2,7 @@
 
 This repository contains the code for the RAS energy model, developed as part of my Master's Thesis: Energy use and efficiency in Recirculating
 Aquaculture Systems (RAS). 
-The details regarding assumptions and modeling is detailed in the Master's Thesis report. 
+The details regarding assumptions and modeling is detailed in the Master's Thesis report. The Project Thesis report is found in the repository.
 
 ## To run the model
 1. ```git clone``` into desired directory
